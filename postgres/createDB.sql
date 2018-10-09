@@ -1,0 +1,6 @@
+DROP TABLE IF EXISTS distributedLogs;
+CREATE TABLE distributedLogs (
+  id VARCHAR(32) PRIMARY KEY,
+  logContent TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL
+);

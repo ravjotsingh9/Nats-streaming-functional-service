@@ -1,0 +1,48 @@
+version: "3.6"
+
+services:
+  publisher:
+    build: "."
+    command: "publisher"
+    depends_on:
+      - "functional-service"
+    ports:
+      - "1234:1234"
+    environment:
+      POSTGRES_DB: "distributedLogs"
+      POSTGRES_USER: "ravjot"
+      POSTGRES_PASSWORD: "ravjot"
+      NATS_ADDRESS: "nats:4222"
+  functional-service:
+    build: "."
+    command: "functional-service"
+    depends_on:
+      - "postgres"
+      - "nats"
+    ports:
+      - "8080"
+    environment:
+      POSTGRES_DB: "distributedLogs"
+      POSTGRES_USER: "ravjot"
+      POSTGRES_PASSWORD: "ravjot"
+      NATS_ADDRESS: "nats:4222"
+  postgres:
+    build: "./postgres"
+    restart: "always"
+    environment:
+      POSTGRES_DB: "distributedLogs"
+      POSTGRES_USER: "ravjot"
+      POSTGRES_PASSWORD: "ravjot"
+    ports:
+      - "5432:5432"
+  nats:
+    image: "nats-streaming:0.9.2"
+    restart: "always"
+    ports:
+      - "4222:4222"
+  nginx:
+    build: "./nginx"
+    ports:
+      - "8080:80"
+    depends_on:
+      - "functional-service"
